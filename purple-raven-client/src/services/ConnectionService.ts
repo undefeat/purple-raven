@@ -2,6 +2,7 @@ import * as io from 'socket.io-client';
 
 import { generateEncryptedPhrase } from './EncryptionService';
 import { generateRandomString } from '../helpers';
+import { SERVER_URL, CHANNELS_API_URL, USERS_API_URL } from '../constants';
 
 let socket: any;
 
@@ -24,7 +25,7 @@ async function registerUser(channel: string, name: string) {
 			token
 		}),
 	};
-	const responseFromPostUser = await fetch('/api/users/' + channel, init);
+	const responseFromPostUser = await fetch(USERS_API_URL + channel, init);
 	if (responseFromPostUser.ok) {
 		return;
 	} else if (responseFromPostUser.status === 422) {
@@ -35,7 +36,7 @@ async function registerUser(channel: string, name: string) {
 }
 
 export async function fetchEncryptedPhrase(channel: string, name: string, key: string): Promise<string> {
-	const responseFromGetEncryptedPhrase = await fetch('/api/channels/' + channel);
+	const responseFromGetEncryptedPhrase = await fetch(CHANNELS_API_URL + channel);
 	switch (responseFromGetEncryptedPhrase.status) {
 		case 200: {
 			const body = await responseFromGetEncryptedPhrase.json();
@@ -54,7 +55,7 @@ export async function fetchEncryptedPhrase(channel: string, name: string, key: s
 					encryptedPhrase: generateEncryptedPhrase(key)
 				}),
 			};
-			const responseFromPostEncryptedPhrase = await fetch('/api/channels/' + channel, init);
+			const responseFromPostEncryptedPhrase = await fetch(CHANNELS_API_URL + channel, init);
 
 			switch (responseFromPostEncryptedPhrase.status) {
 				case 200: {
@@ -84,7 +85,7 @@ export async function fetchEncryptedPhrase(channel: string, name: string, key: s
 }
 
 export function connect(channel: string) {
-	socket = io(`/${channel}`);
+	socket = io(`${SERVER_URL}/${channel}`);
 	return socket;
 }
 
