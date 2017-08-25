@@ -32,6 +32,10 @@
 			&:focus {
 				border-color: $primary-color-medium;
 			}
+
+			&:invalid {
+				box-shadow: none;
+			}
 		}
 
 		.constraints, .description {
