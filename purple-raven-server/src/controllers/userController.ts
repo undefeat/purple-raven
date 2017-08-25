@@ -2,6 +2,10 @@ import { Response, Request, NextFunction } from "express";
 
 import Channels from '../models/channels';
 
+/**
+	GET /api/channels/:channelName/users/:username?exists
+	Content-Type: application/json
+*/
 export function checkIfUsernameExists(req: Request, res: Response, next: NextFunction) {
 	if ('exists' in req.query) {
 		const channelName = req.params.channelName as string;
@@ -13,6 +17,13 @@ export function checkIfUsernameExists(req: Request, res: Response, next: NextFun
 	}
 }
 
+/**
+	POST /api/channels/:channelName/users/:username?verifyToken
+	Content-Type: application/json
+	{
+		"token": "xyz"
+	}
+*/
 export function verifyToken(req: Request, res: Response, next: NextFunction) {
 	if ('verifyToken' in req.query) {
 		const channelName = req.params.channelName as string;
@@ -36,7 +47,13 @@ export function verifyToken(req: Request, res: Response, next: NextFunction) {
 	}
 }
 
-
+/**
+	POST /api/channels/:channelName/users/:username
+	Content-Type: application/json
+	{
+		"token": "xyz"
+	}
+*/
 export function addUser(req: Request, res: Response, next: NextFunction) {
 	if (!('verifyToken' in req.query)) {
 		const channelName = req.params.channelName as string;

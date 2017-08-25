@@ -2,6 +2,10 @@ import { Response, Request, NextFunction } from "express";
 
 import Channels from '../models/channels';
 
+/**
+	GET /api/channels/:channelName?exists
+	Content-Type: application/json
+*/
 export function checkIfChannelExists(req: Request, res: Response, next: NextFunction) {
 	if ('exists' in req.query) {
 		const channelName = req.params.channelName as string;
@@ -12,6 +16,10 @@ export function checkIfChannelExists(req: Request, res: Response, next: NextFunc
 	}
 }
 
+/**
+	GET /api/channels/:channelName?encryptedPhrase
+	Content-Type: application/json
+*/
 export function getEncryptedPhrase(req: Request, res: Response, next: NextFunction) {
 	if ('encryptedPhrase' in req.query) {
 		const channelName = req.params.channelName as string;
@@ -25,6 +33,13 @@ export function getEncryptedPhrase(req: Request, res: Response, next: NextFuncti
 	}
 }
 
+/**
+	POST /api/channels/:channelName
+	Content-Type: application/json
+	{
+		"encryptedPhrase": "xyz"
+	}
+*/
 export function addChannel(req: Request, res: Response) {
 	const channelName = req.params.channelName as string;
 	const encryptedPhrase = req.body.encryptedPhrase as string;
