@@ -1,4 +1,5 @@
 export interface Channel {
+	name: string;
 	encryptedPhrase: string;
-	users: Map<string, string>;
+	users: Array<{ username: string; token: string; }>;
 }

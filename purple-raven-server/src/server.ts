@@ -8,6 +8,7 @@ import * as http from 'http';
 
 import * as encryptedPhraseController from './controllers/encryptedPhraseController';
 import * as usersController from './controllers/usersController';
+import * as channelController from './controllers/channelController';
 
 const app = express();
 const server = http.createServer(app);
@@ -23,10 +24,11 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname, 'public'), { maxAge: 31557600000 }));
 
-app.get('/api/channels/:channel', encryptedPhraseController.getEncryptedPhrase);
-app.post('/api/channels/:channel', encryptedPhraseController.postEncryptedPhrase);
-
-app.post('/api/users/:channel', usersController.postUser);
+app.get('/api/channels/:channelName', [
+	channelController.checkIfChannelExists,
+	channelController.getEncryptedPhrase
+]);
+app.post('/api/channels/:channelName', channelController.addChannel);
 
 /**
  * Start Express server.
