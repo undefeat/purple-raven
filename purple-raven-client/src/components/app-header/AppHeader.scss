@@ -1,0 +1,50 @@
+@import 'sass-veriables/_colors.scss';
+
+.app-header-comp {
+	display: flex;
+	flex-flow: row nowrap;
+	flex-shrink: 0;
+	justify-content: space-between;
+	align-items: center;
+	box-sizing: border-box;
+	height: 3em;
+	padding: 0.5em;
+	width: 100%;
+	background: $primary-color-dark;
+	color: $primary-color-text;
+
+	h1 {
+		font-weight: 400;
+		font-size: 1.5em;
+		margin: 0;
+	}
+
+	button {
+		display: inline-block;
+		margin: 0;
+		padding: 0;
+		outline: none;
+		border: none;
+		vertical-align: bottom;
+		overflow: hidden;
+		border-radius: 50%;
+		text-align: center;
+		cursor: pointer;
+		width: 3em;
+		height: 3em;
+		background: transparent;
+
+		&[disabled] {
+			pointer-events: none;
+			visibility: hidden;
+		}
+
+		svg {
+			height: 3em;
+			width: 1.5em;
+			user-select: none;
+			line-height: 1;
+			fill: $primary-color-text;
+		}
+	}
+}

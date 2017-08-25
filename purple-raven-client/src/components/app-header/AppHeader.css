@@ -1,0 +1,39 @@
+.app-header-comp {
+  display: flex;
+  flex-flow: row nowrap;
+  flex-shrink: 0;
+  justify-content: space-between;
+  align-items: center;
+  box-sizing: border-box;
+  height: 3em;
+  padding: 0.5em;
+  width: 100%;
+  background: #512da8;
+  color: #ffffff; }
+  .app-header-comp h1 {
+    font-weight: 400;
+    font-size: 1.5em;
+    margin: 0; }
+  .app-header-comp button {
+    display: inline-block;
+    margin: 0;
+    padding: 0;
+    outline: none;
+    border: none;
+    vertical-align: bottom;
+    overflow: hidden;
+    border-radius: 50%;
+    text-align: center;
+    cursor: pointer;
+    width: 3em;
+    height: 3em;
+    background: transparent; }
+    .app-header-comp button[disabled] {
+      pointer-events: none;
+      visibility: hidden; }
+    .app-header-comp button svg {
+      height: 3em;
+      width: 1.5em;
+      user-select: none;
+      line-height: 1;
+      fill: #ffffff; }

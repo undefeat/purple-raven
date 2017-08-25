@@ -1,0 +1,67 @@
+.connection-form-comp {
+  overflow-y: auto;
+  overflow-x: hidden;
+  height: 100%;
+  background: #ffffff;
+  display: flex;
+  flex-flow: column nowrap;
+  justify-content: space-between;
+  align-items: center; }
+  .connection-form-comp .input-field {
+    display: flex;
+    flex-flow: column nowrap;
+    padding: 1em 1em 0.5em 1em; }
+    .connection-form-comp .input-field .input-name {
+      color: #212121;
+      line-height: 1.2;
+      margin-bottom: 0.25em; }
+    .connection-form-comp .input-field input {
+      font: inherit;
+      border: 0.125em solid #bdbdbd;
+      padding: 0.25em;
+      box-sizing: border-box;
+      color: #212121;
+      outline: none; }
+    .connection-form-comp .input-field .constraints, .connection-form-comp .input-field .description {
+      font-size: 0.7em;
+      color: #757575;
+      margin-top: 0.5em; }
+    .connection-form-comp .input-field.alert input {
+      border-color: #536dfe; }
+    .connection-form-comp .input-field.required:after {
+      content: '*'; }
+  .connection-form-comp button[type="submit"] {
+    display: inline-block;
+    border: none;
+    padding: 0;
+    margin: 0;
+    outline: none;
+    height: 2em;
+    font-size: 1.125em;
+    color: #ffffff;
+    background: #673ab7;
+    text-align: center;
+    width: 100%;
+    cursor: pointer; }
+  .connection-form-comp .status {
+    min-width: 16em;
+    max-width: 24em;
+    display: flex;
+    flex-flow: row nowrap;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0.75em;
+    background: #9575cd;
+    color: #ffffff;
+    border-radius: 0.5em;
+    font-size: inherit;
+    font-size: 0.75em;
+    transition: all 450ms cubic-bezier(0.23, 1, 0.32, 1) 0ms; }
+    .connection-form-comp .status:empty {
+      min-width: 0;
+      max-width: 0; }
+    .connection-form-comp .status.alert {
+      background: #536dfe; }

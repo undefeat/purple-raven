@@ -1,0 +1,11 @@
+export const MESSAGE_ADD = 'MESSAGE_ADD';
+export type MESSAGE_ADD = typeof MESSAGE_ADD;
+
+export const MESSAGE_REMOVE = 'MESSAGE_REMOVE';
+export type MESSAGE_REMOVE = typeof MESSAGE_REMOVE;
+
+export const MESSAGES_SET_NEW = 'MESSAGES_SET_NEW';
+export type MESSAGES_SET_NEW = typeof MESSAGES_SET_NEW;
+
+export const MESSAGES_CLEAR = 'MESSAGES_CLEAR';
+export type MESSAGES_CLEAR = typeof MESSAGES_CLEAR;
