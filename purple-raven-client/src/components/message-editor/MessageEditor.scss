@@ -29,6 +29,7 @@
 	}
 
 	button {
+		font-size: 1em;
 		display: inline-block;
 		margin: 0.5em;
 		padding: 0;
@@ -56,7 +57,7 @@
 
 		svg {
 			height: 2em;
-			width: 1.125em; 
+			width: 1.125em;
 			user-select: none;
 			line-height: 1;
 			fill: $primary-color-text;
