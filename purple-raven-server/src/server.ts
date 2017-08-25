@@ -3,14 +3,15 @@ import * as compression from 'compression';
 import * as bodyParser from 'body-parser';
 import * as cors from 'cors';
 import * as path from 'path';
-import * as io from 'socket.io';
 import * as http from 'http';
+import * as io from 'socket.io';
 
 import * as usersController from './controllers/userController';
 import * as channelController from './controllers/channelController';
 
-const app = express();
-const server = http.createServer(app);
+export const app = express();
+export const server = http.createServer(app);
+export const ioServer = io(server);
 
 /**
  * Express configuration.
@@ -41,5 +42,3 @@ server.listen(app.get('port'), () => {
 	console.log(('	App is running at http://localhost:%d in %s mode'), app.get('port'), app.get('env'));
 	console.log('	Press CTRL-C to stop\n');
 });
-
-export default app;

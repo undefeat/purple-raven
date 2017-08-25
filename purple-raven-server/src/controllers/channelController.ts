@@ -1,8 +1,9 @@
 import { Response, Request, NextFunction } from "express";
 
 import Channels from '../models/channels';
+import { ioServer } from '../server';
 
-/**
+/*
 	GET /api/channels/:channelName?exists
 	Content-Type: application/json
 */
@@ -16,7 +17,7 @@ export function checkIfChannelExists(req: Request, res: Response, next: NextFunc
 	}
 }
 
-/**
+/*
 	GET /api/channels/:channelName?encryptedPhrase
 	Content-Type: application/json
 */
@@ -33,7 +34,7 @@ export function getEncryptedPhrase(req: Request, res: Response, next: NextFuncti
 	}
 }
 
-/**
+/*
 	POST /api/channels/:channelName
 	Content-Type: application/json
 	{
@@ -54,6 +55,7 @@ export function addChannel(req: Request, res: Response) {
 	validateChannelName(channelName, res);
 	try {
 		Channels.addChannel(channelName, encryptedPhrase);
+		createSocket(channelName);
 		res.status(201).send();
 	} catch (e) {
 		console.error(e);
@@ -77,4 +79,15 @@ function validateChannelName(channelName: string, res: Response) {
 			message
 		});
 	}
+}
+
+export let lastMessageId = 1;
+export function createSocket(channelName: string) {
+	const namespace = ioServer.of(`/${channelName}`);
+	namespace.on('connection', (socket) => {
+		socket.on('message', (message) => {
+			message.id = lastMessageId++;
+			namespace.emit('message', message);
+		});
+	});
 }
