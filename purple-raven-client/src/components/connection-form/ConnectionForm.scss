@@ -28,6 +28,10 @@
 			box-sizing: border-box;
 			color: $primary-text-color;
 			outline: none;
+
+			&:focus {
+				border-color: $primary-color-medium;
+			}
 		}
 
 		.constraints, .description {
