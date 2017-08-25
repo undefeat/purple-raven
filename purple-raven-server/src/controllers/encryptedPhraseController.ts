@@ -31,6 +31,7 @@ export function postEncryptedPhrase(req: Request, res: Response) {
 	namespace.on('connection', function(socket) {
 		socket.on('message', (message) => {
 			message.id = lastMessageId++;
+			message.timestamp = Date.now();
 			namespace.emit('message', message);
 		});
 	});

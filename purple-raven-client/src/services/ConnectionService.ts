@@ -98,7 +98,6 @@ export function disconnect(channel: string) {
 export function postMessage(channel: string, author: string, content: string) {
 	const message = {
 			channel,
-			timestamp: Date.now(),
 			author,
 			content
 	};
