@@ -2,7 +2,7 @@ import { Response, Request, NextFunction } from "express";
 
 import Channels from '../models/channels';
 
-/**
+/*
 	GET /api/channels/:channelName/users/:username?exists
 	Content-Type: application/json
 */
@@ -17,7 +17,7 @@ export function checkIfUsernameExists(req: Request, res: Response, next: NextFun
 	}
 }
 
-/**
+/*
 	POST /api/channels/:channelName/users/:username?verifyToken
 	Content-Type: application/json
 	{
@@ -29,10 +29,10 @@ export function verifyToken(req: Request, res: Response, next: NextFunction) {
 		const channelName = req.params.channelName as string;
 		const username = req.params.username as string;
 		const token = req.body.token as string;
-		if(!Channels.channelExists(channelName)) {
+		if (!Channels.channelExists(channelName)) {
 			res.status(404).json({ message: `Channel with the name "${channelName}" does not exist` });
 		}
-		if(!Channels.usernameExists(username, channelName)) {
+		if (!Channels.usernameExists(username, channelName)) {
 			res.status(404).json({ message: `User with the name "${username}" does not exist` });
 		}
 		if (!token) {
@@ -47,7 +47,7 @@ export function verifyToken(req: Request, res: Response, next: NextFunction) {
 	}
 }
 
-/**
+/*
 	POST /api/channels/:channelName/users/:username
 	Content-Type: application/json
 	{
@@ -59,10 +59,10 @@ export function addUser(req: Request, res: Response, next: NextFunction) {
 		const channelName = req.params.channelName as string;
 		const username = req.params.username as string;
 		const token = req.body.token as string;
-		if(!Channels.channelExists(channelName)) {
+		if (!Channels.channelExists(channelName)) {
 			res.status(404).json({ message: `Channel with the name "${channelName}" does not exist` });
 		}
-		if(Channels.usernameExists(username, channelName)) {
+		if (Channels.usernameExists(username, channelName)) {
 			res.status(409).json({ message: `User with the name "${username}" already exists` });
 		}
 		if (!token) {
