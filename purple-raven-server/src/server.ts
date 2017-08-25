@@ -6,13 +6,11 @@ import * as path from 'path';
 import * as io from 'socket.io';
 import * as http from 'http';
 
-import * as encryptedPhraseController from './controllers/encryptedPhraseController';
-import * as usersController from './controllers/usersController';
+import * as usersController from './controllers/userController';
 import * as channelController from './controllers/channelController';
 
 const app = express();
 const server = http.createServer(app);
-export default io(server);
 
 /**
  * Express configuration.
@@ -30,6 +28,12 @@ app.get('/api/channels/:channelName', [
 ]);
 app.post('/api/channels/:channelName', channelController.addChannel);
 
+app.get('/api/channels/:channelName/users/:username', usersController.checkIfUsernameExists);
+app.post('/api/channels/:channelName/users/:username', [
+	usersController.verifyToken,
+	usersController.addUser
+]);
+
 /**
  * Start Express server.
  */
@@ -37,3 +41,5 @@ server.listen(app.get('port'), () => {
 	console.log(('	App is running at http://localhost:%d in %s mode'), app.get('port'), app.get('env'));
 	console.log('	Press CTRL-C to stop\n');
 });
+
+export default app;

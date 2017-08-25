@@ -29,7 +29,7 @@ export function addChannel(req: Request, res: Response) {
 	const channelName = req.params.channelName as string;
 	const encryptedPhrase = req.body.encryptedPhrase as string;
 	if (!encryptedPhrase) {
-		return res.status(400).json({
+		res.status(400).json({
 			message: 'Request body must contain a property "encryptedPhrase" with a value that is not an empty string'
 		});
 	}
@@ -37,8 +37,13 @@ export function addChannel(req: Request, res: Response) {
 		res.status(409).json({ message: `Channel with the name "${channelName}" already exists` });
 	}
 	validateChannelName(channelName, res);
-	Channels.add(channelName, encryptedPhrase);
-	res.status(201).send();
+	try {
+		Channels.addChannel(channelName, encryptedPhrase);
+		res.status(201).send();
+	} catch (e) {
+		console.error(e);
+		res.status(500).send();
+	}
 }
 
 function validateChannelName(channelName: string, res: Response) {
@@ -49,7 +54,6 @@ function validateChannelName(channelName: string, res: Response) {
 	if (!/^[a-zA-Z0-9]+$/.test(channelName)) {
 		message = 'Channel name contains invalid characters';
 	}
-	console.log(channelName, message);
 	if (message) {
 		res.status(422).json({
 			validationError: true,
