@@ -88,7 +88,7 @@ async function createUser(channel: string, username: string, token: string): Pro
 	};
 	const response = await fetch(url, init);
 	switch (response.status) {
-		case 201: return;
+		case 201: saveToken(username, token); return;
 		case 422: throw await response.json();
 		default: handleUnexpectedResponse(response);
 	}
@@ -96,7 +96,7 @@ async function createUser(channel: string, username: string, token: string): Pro
 
 function validateKey(key: string) {
 	let message;
-	if (key.length < 9) {
+	if (key.length < 8) {
 		message = 'Encryption key is too short';
 	}
 	if (key.length > 16) {
@@ -115,11 +115,19 @@ function validateKey(key: string) {
 	}
 }
 
+function fetchToken(username: string) {
+	return localStorage.getItem(`${username}-token`);
+}
+
+function saveToken(username: string, token: string) {
+	return localStorage.setItem(`${username}-token`, token);
+}
+
 export async function fetchEncryptedPhrase(channel: string, username: string, key: string): Promise<string> {
 	if (await channelExists(channel)) {
 		const encryptedPhrase = await getEncryptedPhrase(channel);
 		if (await usernameExists(channel, username)) {
-			const token = localStorage.getItem('token');
+			const token = fetchToken(username);
 			let tokenVerified = token ? await verifyToken(channel, username, token) : false;
 			if (!tokenVerified) {
 				throw {
