@@ -36,7 +36,7 @@ class MessageItem extends React.Component<MessageItemProps, MessageItemState> {
 		if (fromTimestamp > toTimestamp) {
 			throw new Error('dateTo must go after dateFrom');
 		}
-		
+
 		const secondsPassed = (toTimestamp - fromTimestamp) / 1000;
 		const minutesPassed = Math.floor(secondsPassed / 60);
 		const hoursPassed = Math.floor(secondsPassed / (60 * 60));
@@ -86,12 +86,12 @@ class MessageItem extends React.Component<MessageItemProps, MessageItemState> {
 		this.intervalId = window.setInterval(
 			() => {
 				this.setState({ now: new Date() });
-			}, 
+			},
 			1000
 		);
 	}
 
-	componentWillUnMount() {
+	componentWillUnmount() {
 		window.clearInterval(this.intervalId);
 	}
 
@@ -106,7 +106,7 @@ class MessageItem extends React.Component<MessageItemProps, MessageItemState> {
 				}
 				</header>
 				<div className="message-content">
-					{this.renderParagraphs(content)}							
+					{this.renderParagraphs(content)}
 				</div>
 				{createdDate !== null &&
 					<footer className="message-footer">

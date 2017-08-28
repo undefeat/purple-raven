@@ -4,7 +4,7 @@ import * as ConnectionS from '../services/ConnectionService';
 import * as EncryptionS from '../services/EncryptionService';
 import { StoreState } from '../types/StoreState';
 import { Message } from '../types/Message';
-import { CHANNEL_FIELD, NAME_FIELD, KEY_FIELD } from '../constants';
+import { CHANNEL_FIELD, NAME_FIELD, KEY_FIELD, SETTINGS } from '../constants';
 import {
 	connectionSetActive,
 	connectionSetDetails,
@@ -26,20 +26,35 @@ export function establishConnection(channel: string, name: string, key: string) 
 		async function doConnect() {
 			try {
 				const socket = await ConnectionS.connect(channel);
-				socket.on('message', (data: Message) => {
-					data.author = EncryptionS.decrypt(data.author, key);
-					data.content = EncryptionS.decrypt(data.content, key);
-					dispatch(messageAdd(data));
-				});
-				dispatch(connectionSetActive());
-				dispatch(connectionSetDetails(channel, name, key));
-				dispatch(titleSet('@' + channel));
-				dispatch(connectionClearStatus());
+				handleSocket(socket);
 			} catch (e) {
 				dispatch(
 					connectionSetStatus('Connection could not be established. Please try again next time.', true)
 				);
 			}
+		}
+
+		function handleSocket(socket: any) {
+			socket.on('message', (data: Message) => {
+				data.author = EncryptionS.decrypt(data.author, key);
+				data.content = EncryptionS.decrypt(data.content, key);
+				dispatch(messageAdd(data));
+			});
+			socket.on('connect', () => {
+				dispatch(connectionSetDetails(channel, name, key));
+				dispatch(connectionSetActive());
+				dispatch(titleSet('@' + channel));
+				dispatch(connectionClearStatus());
+			});
+			socket.on('disconnect', () => {
+				doDisconnect().then(() => {
+					dispatch(connectionSetStatus('Disconnected', true));
+					dispatch(connectionSetActive(false));
+					dispatch(connectionValidateAllFields());
+					dispatch(titleSet(SETTINGS));
+					dispatch(messagesClear());
+				});
+			});
 		}
 
 		function handleConnectionError(error: any) {
