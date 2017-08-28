@@ -3,18 +3,7 @@ import { User } from '../types/User';
 
 class ChannelsModel {
 
-	private channels: Channel[] = [
-		{
-			name: 'test',
-			encryptedPhrase: 'fghdfhdfhdfh',
-			users: [
-				{
-					username: 'userA',
-					token: 'tokenA'
-				}
-			]
-		}
-	];
+	private channels: Channel[] = [];
 
 	channelExists(channelName: string): boolean {
 		return this.channels.find(ch => ch.name === channelName) !== undefined;

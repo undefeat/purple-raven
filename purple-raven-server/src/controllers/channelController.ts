@@ -87,6 +87,7 @@ export function createSocket(channelName: string) {
 	namespace.on('connection', (socket) => {
 		socket.on('message', (message) => {
 			message.id = lastMessageId++;
+			message.timestamp = Date.now();
 			namespace.emit('message', message);
 		});
 	});

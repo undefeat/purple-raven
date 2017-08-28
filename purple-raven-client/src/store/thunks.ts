@@ -4,7 +4,7 @@ import * as ConnectionS from '../services/ConnectionService';
 import * as EncryptionS from '../services/EncryptionService';
 import { StoreState } from '../types/StoreState';
 import { Message } from '../types/Message';
-import { VALIDATION_ERROR, CHANNEL_FIELD, NAME_FIELD, KEY_FIELD } from '../constants';
+import { CHANNEL_FIELD, NAME_FIELD, KEY_FIELD } from '../constants';
 import {
 	connectionSetActive,
 	connectionSetDetails,
@@ -43,21 +43,26 @@ export function establishConnection(channel: string, name: string, key: string) 
 		}
 
 		function handleConnectionError(error: any) {
-			if ('type' in error && error.type === VALIDATION_ERROR) {
-				const channelNameErrorMessage: string = error.channelNameErrorMessage;
-				const yourNameErrorMessage: string = error.yourNameErrorMessage;
-				let status = 'Validation errors: ';
-				if (channelNameErrorMessage) {
-					status += channelNameErrorMessage;
-					dispatch(connectionInvalidateField(CHANNEL_FIELD));
-				}
-				if (yourNameErrorMessage) {
-					status += (channelNameErrorMessage ? ', ' : '') + yourNameErrorMessage;
-					dispatch(connectionInvalidateField(NAME_FIELD));
+			if (error.validationError) {
+				let status = error.message;
+				switch (error.fieldName) {
+					case 'channelName': {
+						dispatch(connectionInvalidateField(CHANNEL_FIELD));
+						break;
+					}
+					case 'username': {
+						dispatch(connectionInvalidateField(NAME_FIELD));
+						break;
+					}
+					case 'encryptionKey': {
+						dispatch(connectionInvalidateField(KEY_FIELD));
+						break;
+					}
 				}
 				dispatch(connectionSetStatus(status, true));
 			} else {
-				throw new Error(error);
+				console.error(error);
+				dispatch(connectionSetStatus('Oops! Something went wrong. Please try again later.', true));
 			}
 		}
 

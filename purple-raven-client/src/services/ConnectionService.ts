@@ -2,85 +2,119 @@ import * as io from 'socket.io-client';
 
 import { generateEncryptedPhrase } from './EncryptionService';
 import { generateRandomString } from '../helpers';
-import { SERVER_URL, CHANNELS_API_URL, USERS_API_URL } from '../constants';
+import { SERVER_URL, CHANNELS_API_URL } from '../constants';
 
 let socket: any;
 
-async function registerUser(channel: string, name: string) {
-	if (typeof(Storage) == 'undefined') {
-		throw new Error('Your browser does not support localStorage, which is necessary for proper authentication.');
+function handleUnexpectedResponse(res: Response) {
+	throw new Error(`Response from GET ${res.url} has unexpected status "${res.status} ${res.statusText}"`);
+}
+
+async function channelExists(channel: string): Promise<boolean> {
+	const url = `${CHANNELS_API_URL}/${channel}?exists`;
+	const response = await fetch(url);
+	if (!response.ok) {
+		handleUnexpectedResponse(response);
 	}
-	const token = localStorage.getItem('token');
-	if (!token) {
-		localStorage.setItem('token', generateRandomString(255));
+	const { exists } = await response.json();
+	return exists;
+}
+
+async function getEncryptedPhrase(channel: string): Promise<string> {
+	const url = `${CHANNELS_API_URL}/${channel}?encryptedPhrase`;
+	const response = await fetch(url);
+	if (!response.ok) {
+		handleUnexpectedResponse(response);
 	}
+	const { encryptedPhrase } = await response.json();
+	return encryptedPhrase;
+}
+
+async function createChannel(channel: string, encryptedPhrase: string): Promise<void> {
+	const url = `${CHANNELS_API_URL}/${channel}?encryptedPhrase`;
 	const init = {
 		method: 'POST',
 		headers: new Headers({
 			'Accept': 'application/json',
 			'Content-Type': 'application/json'
 		}),
-		body: JSON.stringify({
-			user: name,
-			token
-		}),
+		body: JSON.stringify({ encryptedPhrase }),
 	};
-	const responseFromPostUser = await fetch(USERS_API_URL + channel, init);
-	if (responseFromPostUser.ok) {
-		return;
-	} else if (responseFromPostUser.status === 422) {
-		throw await responseFromPostUser.json();
-	} else {
-		throw new Error(`Error while trying to register a user: ${responseFromPostUser.status} ${responseFromPostUser.statusText}`);
+	const response = await fetch(url, init);
+	switch (response.status) {
+		case 201: return;
+		case 422: throw await response.json();
+		default: handleUnexpectedResponse(response);
 	}
 }
 
-export async function fetchEncryptedPhrase(channel: string, name: string, key: string): Promise<string> {
-	const responseFromGetEncryptedPhrase = await fetch(CHANNELS_API_URL + channel);
-	switch (responseFromGetEncryptedPhrase.status) {
-		case 200: {
-			const body = await responseFromGetEncryptedPhrase.json();
-			await registerUser(channel, name);
-			return body.encryptedPhrase;
-		}
+async function usernameExists(channel: string, username: string): Promise<boolean> {
+	const url = `${CHANNELS_API_URL}/${channel}/users/${username}?exists`;
+	const response = await fetch(url);
+	if (!response.ok) {
+		handleUnexpectedResponse(response);
+	}
+	const { exists } = await response.json();
+	return exists;
+}
 
-		case 404: {
-			const init = {
-				method: 'POST',
-				headers: new Headers({
-					'Accept': 'application/json',
-					'Content-Type': 'application/json'
-				}),
-				body: JSON.stringify({
-					encryptedPhrase: generateEncryptedPhrase(key)
-				}),
-			};
-			const responseFromPostEncryptedPhrase = await fetch(CHANNELS_API_URL + channel, init);
+async function verifyToken(channel: string, username: string, token: string): Promise<boolean> {
+	const url = `${CHANNELS_API_URL}/${channel}/users/${username}?verifyToken`;
+	const init = {
+		method: 'POST',
+		headers: new Headers({
+			'Accept': 'application/json',
+			'Content-Type': 'application/json'
+		}),
+		body: JSON.stringify({ token }),
+	};
+	const response = await fetch(url, init);
+	if (!response.ok) {
+		handleUnexpectedResponse(response);
+	}
+	const { tokenVerified } = await response.json();
+	return tokenVerified;
+}
 
-			switch (responseFromPostEncryptedPhrase.status) {
-				case 200: {
-					const body = await responseFromPostEncryptedPhrase.json();
-					await registerUser(channel, name);
-					return body.encryptedPhrase;
-				}
+async function createUser(channel: string, username: string, token: string): Promise<void> {
+	const url = `${CHANNELS_API_URL}/${channel}/users/${username}`;
+	const init = {
+		method: 'POST',
+		headers: new Headers({
+			'Accept': 'application/json',
+			'Content-Type': 'application/json'
+		}),
+		body: JSON.stringify({ token }),
+	};
+	const response = await fetch(url, init);
+	switch (response.status) {
+		case 201: return;
+		case 422: throw await response.json();
+		default: handleUnexpectedResponse(response);
+	}
+}
 
-				case 422: {
-					throw await responseFromPostEncryptedPhrase.json();
-				}
-
-				default: {
-					throw new Error(`Error while trying to get encrypted phrase: ${responseFromGetEncryptedPhrase.status} ${responseFromGetEncryptedPhrase.statusText}`);
-				}
+export async function fetchEncryptedPhrase(channel: string, username: string, key: string): Promise<string> {
+	if (await channelExists(channel)) {
+		const encryptedPhrase = await getEncryptedPhrase(channel);
+		if (await usernameExists(channel, username)) {
+			const token = localStorage.getItem('token');
+			let tokenVerified = token ? await verifyToken(channel, username, token) : false;
+			if (!tokenVerified) {
+				throw {
+					validationError: true,
+					fieldName: 'username',
+					message: 'Could not verify username. Please try another one.'
+				};
 			}
+		} else {
+			await createUser(channel, username, generateRandomString(255));
 		}
-
-		case 422: {
-			throw await responseFromGetEncryptedPhrase.json();
-		}
-
-		default: {
-			throw new Error(`Error while trying to get encrypted phrase: ${responseFromGetEncryptedPhrase.status} ${responseFromGetEncryptedPhrase.statusText}`);
-		}
+		return encryptedPhrase;
+	} else {
+		const encryptedPhrase = generateEncryptedPhrase(key);
+		await createChannel(channel, encryptedPhrase);
+		return encryptedPhrase;
 	}
 }
 
