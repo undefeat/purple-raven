@@ -94,6 +94,27 @@ async function createUser(channel: string, username: string, token: string): Pro
 	}
 }
 
+function validateKey(key: string) {
+	let message;
+	if (key.length < 9) {
+		message = 'Encryption key is too short';
+	}
+	if (key.length > 16) {
+		message = 'Encryption key is too long';
+	}
+	if (!/^[a-zA-Z0-9]+$/.test(key)) {
+		message = 'Encryption key contains invalid characters';
+	}
+	if (message) {
+		throw {
+			validationError: true,
+			fieldName: 'encryptionKey',
+			constraints: 'Valid characters: letters a-zA-Z, digits, no spaces. Minimum length - 8. Maximum length - 16.',
+			message
+		};
+	}
+}
+
 export async function fetchEncryptedPhrase(channel: string, username: string, key: string): Promise<string> {
 	if (await channelExists(channel)) {
 		const encryptedPhrase = await getEncryptedPhrase(channel);
@@ -112,6 +133,7 @@ export async function fetchEncryptedPhrase(channel: string, username: string, ke
 		}
 		return encryptedPhrase;
 	} else {
+		validateKey(key);
 		const encryptedPhrase = generateEncryptedPhrase(key);
 		await createChannel(channel, encryptedPhrase);
 		return encryptedPhrase;

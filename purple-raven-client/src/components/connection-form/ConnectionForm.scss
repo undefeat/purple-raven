@@ -48,6 +48,10 @@
 			input {
 				border-color: $accent-color;
 			}
+
+			.constraints {
+				color: $accent-color;
+			}
 		}
 
 		&.required:after {
