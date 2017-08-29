@@ -34,7 +34,7 @@ class MessageItem extends React.Component<MessageItemProps, MessageItemState> {
 		const toTimestamp = dateTo.valueOf();
 
 		if (fromTimestamp > toTimestamp) {
-			throw new Error('dateTo must go after dateFrom');
+			return 'just now';
 		}
 
 		const secondsPassed = (toTimestamp - fromTimestamp) / 1000;
