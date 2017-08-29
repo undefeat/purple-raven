@@ -9,6 +9,7 @@ import { messageEditorEventContainer as messageEditorEC } from '../../globals';
 class MessageList extends React.Component<MessageListProps, MessageListState> {
 
 	list: HTMLElement;
+	audio: HTMLAudioElement;
 
 	state: MessageListState = {
 		autoScroll: true
@@ -56,14 +57,21 @@ class MessageList extends React.Component<MessageListProps, MessageListState> {
 
 	componentDidUpdate(prevProps: MessageListProps) {
 		const newMessagesAreAdded = this.props.messages.length > prevProps.messages.length;
-		if (newMessagesAreAdded && this.state.autoScroll) {
-			this.scrollToBottom();
+		if (newMessagesAreAdded) {
+			const lastMessage = this.props.messages[this.props.messages.length - 1];
+			if (lastMessage.author !== this.props.myName) {
+				this.audio.play();
+			}
+			if (this.state.autoScroll) {
+				this.scrollToBottom();
+			}
 		}
 	}
 
 	render() {
 		return (
 			<section className="message-list-comp" ref={(el: HTMLElement) => { this.list = el; }}>
+				<audio ref={(el: HTMLAudioElement) => { this.audio = el; }} src="/message-tone.mp3" controls={false} autoPlay={false} />
 				{this.renderMessageItems()}
 			</section>
 		);
