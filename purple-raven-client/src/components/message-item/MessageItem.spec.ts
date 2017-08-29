@@ -22,17 +22,6 @@ describe('MessageItem#isPlural', () => {
 });
 
 describe('MessageItem#getTimePassed', () => {
-	it('throws when dateFrom is after dateTo', () => {
-		expect(() => {
-			const component = new MessageItem();
-
-			const dateFrom = new Date('2016-03-25T12:00:00Z');
-			const dateTo = new Date('2015-03-25T12:00:59Z');
-
-			component.getTimePassed(dateFrom, dateTo)
-		}).toThrow();
-	});
-
 	it('returns "just now" when less than a minute passed', () => {
 		const component = new MessageItem();
 
