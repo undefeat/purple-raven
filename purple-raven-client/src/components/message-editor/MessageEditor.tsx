@@ -67,6 +67,7 @@ class MessageEditor extends React.Component<MessageEditorProps, MessageEditorSta
 					onKeyDown={this.handleKeyDown}
 					onChange={this.handleTextAreaChange}
 					style={{ minHeight: height }}
+					autoFocus={true}
 				/>
 				<button
 					type="button"
