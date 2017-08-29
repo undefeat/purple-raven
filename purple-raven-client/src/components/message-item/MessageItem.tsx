@@ -102,18 +102,21 @@ class MessageItem extends React.Component<MessageItemProps, MessageItemState> {
 			<article className={'message-item-comp' + (isMine ? ' my-message' : '')}>
 				<header className="message-header">
 				{!isMine &&
-					<span className="author" title={author}>{author[0]}</span>
+					<span className="author">
+						{author[0]}
+						<div className="title">{author}</div>
+					</span>
 				}
 				</header>
 				<div className="message-content">
 					{this.renderParagraphs(content)}
 				</div>
 				{createdDate !== null &&
-					<footer className="message-footer">
-						<time dateTime={createdDate.toISOString()}>
-							{this.getTimePassed(createdDate, this.state.now)}
-						</time>
-					</footer>
+				<footer className="message-footer">
+					<time dateTime={createdDate.toISOString()}>
+						{this.getTimePassed(createdDate, this.state.now)}
+					</time>
+				</footer>
 				}
 			</article>
 		);
