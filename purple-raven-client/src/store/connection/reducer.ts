@@ -33,7 +33,7 @@ export function connectionReducer(state: Connection = defaultState.connection, a
 		case CONNECTION_VALIDATE_FIELD: {
 			const { fieldName } = action;
 			const validity = { ...state.validity };
-			if (fieldName in validity) {
+			if (validity.hasOwnProperty(fieldName)) {
 				validity[fieldName] = true;
 			} else {
 				throw Error(`A field with a name "${fieldName}" does not exist in the connection form`);
@@ -44,7 +44,7 @@ export function connectionReducer(state: Connection = defaultState.connection, a
 		case CONNECTION_INVALIDATE_FIELD: {
 			const { fieldName } = action;
 			const validity = { ...state.validity };
-			if (fieldName in validity) {
+			if (validity.hasOwnProperty(fieldName)) {
 				validity[fieldName] = false;
 			} else {
 				throw Error(`A field with a name "${fieldName}" does not exist in the connection form`);
@@ -54,7 +54,7 @@ export function connectionReducer(state: Connection = defaultState.connection, a
 
 		case CONNECTION_VALIDATE_ALL_FIELDS: {
 			const validity = { ...state.validity };
-			for (const fieldName in validity) {
+			for (const fieldName of Object.keys(validity)) {
 				validity[fieldName] = true;
 			}
 			return { ...state, validity };

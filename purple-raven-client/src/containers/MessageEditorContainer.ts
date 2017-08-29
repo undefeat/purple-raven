@@ -4,6 +4,7 @@ import { StoreState } from '../types/StoreState';
 import MessageEditor from '../components/message-editor/MessageEditor';
 import { messagesSetNew } from '../store/messages/actions';
 import { sendMessage } from '../store/thunks';
+import { Action } from '../store';
 
 function mapStateToProps(state: StoreState) {
 	return {
@@ -11,7 +12,7 @@ function mapStateToProps(state: StoreState) {
 	};
 }
 
-function mapDispatchToProps(dispatch: Dispatch<any>) {
+function mapDispatchToProps(dispatch: Dispatch<Action>) {
 	return {
 		updateContent(content: string) {
 			dispatch(messagesSetNew(content));

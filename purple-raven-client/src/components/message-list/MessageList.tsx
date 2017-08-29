@@ -71,7 +71,12 @@ class MessageList extends React.Component<MessageListProps, MessageListState> {
 	render() {
 		return (
 			<section className="message-list-comp" ref={(el: HTMLElement) => { this.list = el; }}>
-				<audio ref={(el: HTMLAudioElement) => { this.audio = el; }} src="/message-tone.mp3" controls={false} autoPlay={false} />
+				<audio
+					ref={(el: HTMLAudioElement) => { this.audio = el; }}
+					src="/message-tone.mp3"
+					controls={false}
+					autoPlay={false}
+				/>
 				{this.renderMessageItems()}
 			</section>
 		);

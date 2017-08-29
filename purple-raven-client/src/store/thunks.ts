@@ -4,6 +4,7 @@ import * as ConnectionS from '../services/ConnectionService';
 import * as EncryptionS from '../services/EncryptionService';
 import { StoreState } from '../types/StoreState';
 import { Message } from '../types/Message';
+import { ValidationError } from '../types/ValidationError';
 import { CHANNEL_FIELD, NAME_FIELD, KEY_FIELD, SETTINGS } from '../constants';
 import {
 	connectionSetActive,
@@ -15,9 +16,10 @@ import {
 } from './connection/actions';
 import { messageAdd, messagesSetNew, messagesClear } from './messages/actions';
 import { titleSet } from './title/actions';
+import { Action } from './';
 
 export function establishConnection(channel: string, name: string, key: string) {
-	return (dispatch: Dispatch<any>, getState: () => StoreState) => {
+	return (dispatch: Dispatch<Action>, getState: () => StoreState) => {
 
 		async function doDisconnect() {
 			return await ConnectionS.disconnect(channel);
@@ -34,7 +36,7 @@ export function establishConnection(channel: string, name: string, key: string) 
 			}
 		}
 
-		function handleSocket(socket: any) {
+		function handleSocket(socket: SocketIOClient.Socket) {
 			socket.on('message', (data: Message) => {
 				data.author = EncryptionS.decrypt(data.author, key);
 				data.content = EncryptionS.decrypt(data.content, key);
@@ -45,6 +47,7 @@ export function establishConnection(channel: string, name: string, key: string) 
 				dispatch(connectionSetActive());
 				dispatch(titleSet('@' + channel));
 				dispatch(connectionClearStatus());
+				dispatch(messagesClear());
 			});
 			socket.on('disconnect', () => {
 				doDisconnect().then(() => {
@@ -57,7 +60,7 @@ export function establishConnection(channel: string, name: string, key: string) 
 			});
 		}
 
-		function handleConnectionError(error: any) {
+		function handleConnectionError(error: ValidationError) {
 			if (error.validationError) {
 				let status = error.message;
 				switch (error.fieldName) {
@@ -73,10 +76,10 @@ export function establishConnection(channel: string, name: string, key: string) 
 						dispatch(connectionInvalidateField(KEY_FIELD));
 						break;
 					}
+					default: break;
 				}
 				dispatch(connectionSetStatus(status, true));
 			} else {
-				console.error(error);
 				dispatch(connectionSetStatus('Oops! Something went wrong. Please try again later.', true));
 			}
 		}
@@ -87,12 +90,7 @@ export function establishConnection(channel: string, name: string, key: string) 
 				if (EncryptionS.canBeDecrypted(encryptedPhrase, key)) {
 					dispatch(connectionValidateAllFields());
 					dispatch(connectionSetStatus('Credentials valid.'));
-					if (getState().connection.channelName !== channel) {
-						dispatch(messagesClear());
-						doDisconnect().then(doConnect);
-					} else {
-						doConnect();
-					}
+					doDisconnect().then(doConnect);
 				} else {
 					dispatch(connectionInvalidateField(KEY_FIELD));
 					dispatch(connectionSetStatus('Invalid Encryption Key.', true));
@@ -103,7 +101,7 @@ export function establishConnection(channel: string, name: string, key: string) 
 }
 
 export function sendMessage() {
-	return (dispatch: Dispatch<any>, getState: () => StoreState) => {
+	return (dispatch: Dispatch<Action>, getState: () => StoreState) => {
 		const channel = getState().connection.channelName;
 		const author = getState().connection.userName;
 		const content = getState().messages.newMessage;
@@ -118,7 +116,7 @@ export function sendMessage() {
 }
 
 export function showMessageList() {
-	return (dispatch: Dispatch<any>, getState: () => StoreState) => {
+	return (dispatch: Dispatch<Action>, getState: () => StoreState) => {
 		dispatch(titleSet('@' + getState().connection.channelName));
 	};
 }

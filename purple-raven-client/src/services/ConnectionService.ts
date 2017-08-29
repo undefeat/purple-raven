@@ -4,7 +4,7 @@ import { generateEncryptedPhrase } from './EncryptionService';
 import { generateRandomString } from '../helpers';
 import { SERVER_URL, CHANNELS_API_URL } from '../constants';
 
-let socket: any;
+let socket: SocketIOClient.Socket;
 
 function handleUnexpectedResponse(res: Response) {
 	throw new Error(`Response from GET ${res.url} has unexpected status "${res.status} ${res.statusText}"`);

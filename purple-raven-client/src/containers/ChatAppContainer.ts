@@ -6,6 +6,7 @@ import ChatApp from '../components/chat-app/ChatApp';
 import { titleSet } from '../store/title/actions';
 import { connectionClearStatus, connectionValidateAllFields } from '../store/connection/actions';
 import { showMessageList } from '../store/thunks';
+import { Action } from '../store';
 
 function mapStateToProps(state: StoreState) {
 	return {
@@ -15,7 +16,7 @@ function mapStateToProps(state: StoreState) {
 	};
 }
 
-function mapDispatchToProps(dispatch: Dispatch<any>) {
+function mapDispatchToProps(dispatch: Dispatch<Action>) {
 	return {
 		goBack() {
 			dispatch(showMessageList());

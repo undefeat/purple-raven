@@ -5,6 +5,7 @@ import ConnectionForm from '../components/connection-form/ConnectionForm';
 import { establishConnection } from '../store/thunks';
 import { connectionValidateField } from '../store/connection/actions';
 import { CHANNEL_FIELD, NAME_FIELD, KEY_FIELD } from '../constants';
+import { Action } from '../store';
 
 function mapStateToProps(state: StoreState) {
 	const { status, alert, validity } = state.connection;
@@ -15,7 +16,7 @@ function mapStateToProps(state: StoreState) {
 	};
 }
 
-function mapDispatchToProps(dispatch: Dispatch<any>) {
+function mapDispatchToProps(dispatch: Dispatch<Action>) {
 	return {
 		connect(channel: string, name: string, key: string) {
 			dispatch(establishConnection(channel, name, key));

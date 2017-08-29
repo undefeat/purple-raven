@@ -11,7 +11,7 @@ import reducer from './store/reducer';
 import { StoreState } from './types/StoreState';
 import ChatAppContainer from './containers/ChatAppContainer';
 
-if (typeof(Storage) === "undefined") {
+if (typeof(Storage) === 'undefined') {
 	ReactDOM.render(
 		<p>
 			Your browser does not support Web Storage API. Please update your browser or use another one.
