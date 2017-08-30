@@ -61,6 +61,7 @@ class MessageList extends React.Component<MessageListProps, MessageListState> {
 	}
 
 	componentDidMount() {
+		this.audio.volume = 0.25;
 		this.list.addEventListener('scroll', this.handleScroll);
 		messageEditorEC.addEventListener('editorHeightChange', this.scrollToBottom);
 		messageEditorEC.addEventListener('editorHeightChange', this.positionScrollToBottomBtn);
