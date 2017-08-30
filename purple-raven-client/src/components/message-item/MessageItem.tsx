@@ -24,7 +24,7 @@ class MessageItem extends React.Component<MessageItemProps, MessageItemState> {
 				const elements = [];
 				while (textSpans.length || urls.length) {
 					if (textSpans.length) {
-						const spanText = textSpans.shift()
+						const spanText = textSpans.shift();
 						elements.push(<span key={elements.length}>{spanText}</span>);
 					}
 					if (urls.length) {
