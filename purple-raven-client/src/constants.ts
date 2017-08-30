@@ -9,5 +9,5 @@ export const KEY_FIELD = 'key';
 
 export const RANDOM_STRING_LENGTH = 255;
 
-export let SERVER_URL = isLocalhost ? 'http://localhost:8080' : '';
+export let SERVER_URL = isLocalhost && window.location.port !== '8080' ? 'http://localhost:8080' : '';
 export const CHANNELS_API_URL = `${SERVER_URL}/api/channels`;
