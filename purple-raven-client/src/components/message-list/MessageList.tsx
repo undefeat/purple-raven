@@ -99,6 +99,7 @@ class MessageList extends React.Component<MessageListProps, MessageListState> {
 				author={message.author}
 				content={message.content}
 				createdDate={new Date(message.timestamp)}
+				isConnectionMessage={Boolean(message.isConnectionMessage)}
 			/>
 		));
 	}

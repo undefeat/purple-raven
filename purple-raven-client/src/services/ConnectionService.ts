@@ -2,7 +2,7 @@ import * as io from 'socket.io-client';
 
 import { generateEncryptedPhrase } from './EncryptionService';
 import { generateRandomString } from '../helpers';
-import { SERVER_URL, CHANNELS_API_URL } from '../constants';
+import { SERVER_URL, CHANNELS_API_URL, AUTO_MESSAGE_AUTHOR } from '../constants';
 
 let socket: SocketIOClient.Socket;
 
@@ -115,6 +115,16 @@ function validateKey(key: string) {
 	}
 }
 
+function validateUsername(username: string) {
+	if (username.toLowerCase() === AUTO_MESSAGE_AUTHOR.toLowerCase()) {
+		throw {
+			validationError: true,
+			fieldName: 'username',
+			message: `Username "${AUTO_MESSAGE_AUTHOR}" is reserved`
+		};
+	}
+}
+
 function fetchToken(username: string) {
 	return localStorage.getItem(`${username}-token`);
 }
@@ -124,6 +134,7 @@ function saveToken(username: string, token: string) {
 }
 
 export async function fetchEncryptedPhrase(channel: string, username: string, key: string): Promise<string> {
+	validateUsername(username);
 	if (await channelExists(channel)) {
 		const encryptedPhrase = await getEncryptedPhrase(channel);
 		if (await usernameExists(channel, username)) {
@@ -148,8 +159,8 @@ export async function fetchEncryptedPhrase(channel: string, username: string, ke
 	}
 }
 
-export function connect(channel: string) {
-	socket = io(`${SERVER_URL}/${channel}`);
+export function connect(channel: string, username: string) {
+	socket = io(`${SERVER_URL}/${channel}?username=${username}`);
 	return socket;
 }
 

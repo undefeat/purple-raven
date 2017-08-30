@@ -4,8 +4,9 @@ import * as ConnectionS from '../services/ConnectionService';
 import * as EncryptionS from '../services/EncryptionService';
 import { StoreState } from '../types/StoreState';
 import { Message } from '../types/Message';
+import { SocketConnectionMessage } from '../types/SocketConnectionMessage';
 import { ValidationError } from '../types/ValidationError';
-import { CHANNEL_FIELD, NAME_FIELD, KEY_FIELD, SETTINGS } from '../constants';
+import { CHANNEL_FIELD, NAME_FIELD, KEY_FIELD, SETTINGS, AUTO_MESSAGE_AUTHOR } from '../constants';
 import {
 	connectionSetActive,
 	connectionSetDetails,
@@ -27,7 +28,7 @@ export function establishConnection(channel: string, name: string, key: string) 
 
 		async function doConnect() {
 			try {
-				const socket = await ConnectionS.connect(channel);
+				const socket = await ConnectionS.connect(channel, name);
 				handleSocket(socket);
 			} catch (e) {
 				dispatch(
@@ -37,11 +38,41 @@ export function establishConnection(channel: string, name: string, key: string) 
 		}
 
 		function handleSocket(socket: SocketIOClient.Socket) {
+
 			socket.on('message', (data: Message) => {
 				data.author = EncryptionS.decrypt(data.author, key);
 				data.content = EncryptionS.decrypt(data.content, key);
 				dispatch(messageAdd(data));
 			});
+
+			socket.on('client-connect', (data: SocketConnectionMessage) => {
+				if (socket.id !== data.socketId) {
+					const connectionMessage: Message = {
+						id: data.socketId + '#client-connect',
+						timestamp: data.timestamp,
+						author: AUTO_MESSAGE_AUTHOR,
+						content: `${data.author} has joined`,
+						channel,
+						isConnectionMessage: true
+					};
+					dispatch(messageAdd(connectionMessage));
+				}
+			});
+
+			socket.on('client-disconnect', (data: SocketConnectionMessage) => {
+				if (socket.id !== data.socketId) {
+					const connectionMessage: Message = {
+						id: data.socketId + '#client-disconnect',
+						timestamp: data.timestamp,
+						author: AUTO_MESSAGE_AUTHOR,
+						content: `${data.author} has left`,
+						channel,
+						isConnectionMessage: true
+					};
+					dispatch(messageAdd(connectionMessage));
+				}
+			});
+
 			socket.on('connect', () => {
 				dispatch(connectionSetDetails(channel, name, key));
 				dispatch(connectionSetActive());
@@ -49,6 +80,7 @@ export function establishConnection(channel: string, name: string, key: string) 
 				dispatch(connectionClearStatus());
 				dispatch(messagesClear());
 			});
+
 			socket.on('disconnect', () => {
 				doDisconnect().then(() => {
 					dispatch(connectionSetStatus('Disconnected', true));

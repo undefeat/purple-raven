@@ -3,4 +3,5 @@ export interface MessageItemProps {
 	author: string;
 	content: string;
 	createdDate: Date | null;
+	isConnectionMessage: boolean;
 }

@@ -1,7 +1,8 @@
 export interface Message {
 	id: string;
-	channel: string;
 	timestamp: number;
-	author: string;
 	content: string;
+	author: string;
+	channel: string;
+	isConnectionMessage?: boolean;
 }

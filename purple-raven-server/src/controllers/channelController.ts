@@ -85,6 +85,23 @@ export let lastMessageId = 1;
 export function createSocket(channelName: string) {
 	const namespace = ioServer.of(`/${channelName}`);
 	namespace.on('connection', (socket) => {
+
+		const username = socket.handshake.query.username;
+
+		namespace.emit('client-connect', {
+			socketId: socket.id,
+			timestamp: Date.now(),
+			author: username
+		});
+
+		socket.on('disconnect', () => {
+			namespace.emit('client-disconnect', {
+				socketId: socket.id,
+				timestamp: Date.now(),
+				author: username
+			});
+		});
+
 		socket.on('message', (message) => {
 			message.id = lastMessageId++;
 			message.timestamp = Date.now();

@@ -2,6 +2,8 @@ import { isLocalhost } from './registerServiceWorker';
 
 export const SETTINGS = 'Connection Settings';
 
+export const AUTO_MESSAGE_AUTHOR = 'Raven';
+
 export const VALIDATION_ERROR = 'VALIDATION_ERROR';
 export const CHANNEL_FIELD = 'channel';
 export const NAME_FIELD = 'name';
