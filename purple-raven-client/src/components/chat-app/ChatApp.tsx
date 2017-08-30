@@ -9,14 +9,11 @@ import MessageListContainer from '../../containers/MessageListContainer';
 import MessageEditorContainer from '../../containers/MessageEditorContainer';
 
 function ChatApp(props: ChatAppProps) {
-	const { title, showBackBtn, showSettingsBtn } = props;
-	const { goBack, openSettings } = props;
-	const appHeaderProps = {
-		title, showBackBtn, showSettingsBtn, goBack, openSettings
-	};
+	const { title } = props;
+
 	return (
 		<div className="chat-app-comp">
-			<AppHeader {...appHeaderProps} />
+			<AppHeader {...props} />
 
 			{title === SETTINGS && <ConnectionFormContainer />}
 
