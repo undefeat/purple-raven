@@ -17,7 +17,26 @@ class MessageItem extends React.Component<MessageItemProps, MessageItemState> {
 			if (line.trim().length === 0) {
 				return null;
 			}
-			return <p key={index}>{line}</p>;
+			const urlRegex: RegExp = /https?:\/\/[a-zA-Z0-9-._~:\/?#\[\]@!$&'()*+,;=`]+/g;
+			const urls = line.match(urlRegex) as string[] | null;
+			if (urls) {
+				const textSpans = line.split(urlRegex);
+				const elements = [];
+				while (textSpans.length || urls.length) {
+					if (textSpans.length) {
+						const spanText = textSpans.shift()
+						elements.push(<span key={elements.length}>{spanText}</span>);
+					}
+					if (urls.length) {
+						const url = urls.shift();
+						const title = `Open in a new tab "${url}"`;
+						elements.push(<a key={elements.length} href={url} target="_blank" title={title}>{url}</a>);
+					}
+				}
+				return <p key={index}>{elements}</p>;
+			} else {
+				return <p key={index}>{line}</p>;
+			}
 		});
 	}
 
