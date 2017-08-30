@@ -102,3 +102,11 @@
 		}
 	}
 }
+
+@media (max-height: 768px) {
+	.status {
+		width: 100%;
+		position: fixed;
+		top: 4.25em;
+	}
+}
